@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico de Sessões - RPA Doc{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="display-6 fw-bold text-primary">
+                    <i class="fas fa-history me-3"></i>
+                    Histórico de Sessões
+                </h1>
+                <p class="lead text-muted mb-0">
+                    Visualize e gerencie o histórico de processamento de documentos
+                </p>
+            </div>
+            <div>
+                <a href="/" class="btn btn-outline-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    Nova Sessão
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtros e Controles -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="searchFilter" placeholder="Buscar por ID da sessão...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter">
+                            <option value="">Todos os status</option>
+                            <option value="completed">Concluídos</option>
+                            <option value="processing">Processando</option>
+                            <option value="error">Com erro</option>
+                            <option value="uploading">Upload</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" id="refreshBtn">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            Atualizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Sessões -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Sessões Recentes
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <!-- Loading State -->
+                <div id="loadingState" class="text-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Carregando histórico...</p>
+                </div>
+
+                <!-- Sessions List -->
+                <div id="sessionsList" style="display: none;">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="text-center p-5" style="display: none;">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhuma sessão encontrada</h5>
+                    <p class="text-muted">Ainda não há sessões de processamento.</p>
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Criar primeira sessão
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paginação -->
+        <nav aria-label="Paginação do histórico" class="mt-4">
+            <ul class="pagination justify-content-center" id="paginationNav">
+                <!-- Será preenchido dinamicamente -->
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Modal de Detalhes da Sessão -->
+<div class="modal fade" id="sessionModal" tabindex="-1" aria-labelledby="sessionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sessionModalLabel">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Detalhes da Sessão
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="sessionDetailsContent">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Templates -->
+<template id="sessionItemTemplate">
+    <div class="session-item border-bottom p-3" data-session-id="">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge me-2 session-status"></span>
+                    <strong class="session-id"></strong>
+                    <span class="text-muted ms-2 session-date"></span>
+                </div>
+                <div class="session-info text-muted small">
+                    <span class="session-files"></span>
+                    <span class="session-actions ms-3"></span>
+                    <span class="session-duration ms-3"></span>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-primary view-details-btn">
+                        <i class="fas fa-eye me-1"></i>
+                        Detalhes
+                    </button>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-download me-1"></i>
+                            Download
+                        </button>
+                        <ul class="dropdown-menu download-menu">
+                            <!-- Será preenchido dinamicamente -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

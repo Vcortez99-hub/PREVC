@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block title %}Upload de Arquivos - RPA Doc{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-primary">
+                <i class="fas fa-upload me-3"></i>
+                Documentação RPA Automática
+            </h1>
+            <p class="lead text-muted">
+                Envie suas transcrições e screenshots para gerar documentação RPA automaticamente
+            </p>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-file-upload me-2"></i>
+                    Upload de Arquivos
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <!-- Transcrição -->
+                    <div class="mb-4">
+                        <label for="transcription" class="form-label fw-bold">
+                            <i class="fas fa-file-text me-2 text-primary"></i>
+                            Arquivo de Transcrição
+                        </label>
+                        <input type="file" 
+                               class="form-control" 
+                               id="transcription" 
+                               name="transcription"
+                               accept=".txt,.vtt"
+                               required>
+                        <div class="form-text">
+                            <small>Aceita arquivos .txt ou .vtt (máximo 10MB)</small>
+                        </div>
+                    </div>
+
+                    <!-- Screenshots -->
+                    <div class="mb-4" id="screenshotsSection">
+                        <label for="screenshots" class="form-label fw-bold">
+                            <i class="fas fa-images me-2 text-primary"></i>
+                            Screenshots do Processo
+                        </label>
+                        <input type="file" 
+                               class="form-control" 
+                               id="screenshots" 
+                               name="screenshots"
+                               accept=".png,.jpg,.jpeg,.gif,.bmp"
+                               multiple
+                               required>
+                        <div class="form-text">
+                            <small>Selecione múltiplas imagens (máximo 40MB total)</small>
+                        </div>
+                    </div>
+
+                    <!-- Configuração de IA/Modelo -->
+                    <div class="mb-4">
+                        <div class="card border-primary">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-robot me-2 text-primary"></i>
+                                    Configuração de IA/Modelo
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="aiProvider" class="form-label fw-bold">
+                                            <i class="fas fa-cogs me-2"></i>
+                                            Provedor de IA
+                                        </label>
+                                        <select class="form-select" id="aiProvider" name="aiProvider">
+                                            <option value="openai" selected>OpenAI</option>
+                                            <option value="azure">Azure OpenAI</option>
+                                            <option value="anthropic">Anthropic (Claude)</option>
+                                            <option value="google">Google (Gemini)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="aiModel" class="form-label fw-bold">
+                                            <i class="fas fa-brain me-2"></i>
+                                            Modelo
+                                        </label>
+                                        <select class="form-select" id="aiModel" name="aiModel">
+                                            <option value="gpt-4" selected>GPT-4</option>
+                                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="aiToken" class="form-label fw-bold">
+                                        <i class="fas fa-key me-2"></i>
+                                        Token/API Key
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="aiToken" 
+                                               name="aiToken"
+                                               placeholder="Insira seu token de API">
+                                        <button class="btn btn-outline-secondary" type="button" id="toggleToken">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Deixe em branco para usar a configuração padrão do sistema
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="agentType" class="form-label fw-bold">
+                                        <i class="fas fa-user-robot me-2"></i>
+                                        Tipo de Agente
+                                    </label>
+                                    <select class="form-select" id="agentType" name="agentType">
+                                        <option value="rpa_general" selected>RPA Geral</option>
+                                        <option value="rpa_technical">RPA Técnico</option>
+                                        <option value="rpa_business">RPA Business</option>
+                                        <option value="process_analyst">Analista de Processos</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                    <div class="form-text">
+                                        <small class="text-muted">
+                                            Cada agente tem prompts específicos para diferentes tipos de documentação
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checkbox para processar só com transcrição -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="transcriptionOnlyMode" 
+                                   name="transcriptionOnlyMode">
+                            <label class="form-check-label fw-bold" for="transcriptionOnlyMode">
+                                <i class="fas fa-file-text me-2 text-warning"></i>
+                                Processar apenas com transcrição (sem screenshots)
+                            </label>
+                        </div>
+                        <div class="form-text">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Marque esta opção se você não possui screenshots do processo. 
+                                A documentação será gerada baseada apenas na transcrição fornecida.
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Drag & Drop Area -->
+                    <div class="drag-drop-zone border border-2 border-dashed rounded p-4 text-center mb-4" 
+                         id="dragDropZone">
+                        <div class="drag-drop-content">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <p class="mb-0">
+                                <strong>Arraste arquivos aqui</strong> ou use os campos acima
+                            </p>
+                            <small class="text-muted">Transcrições (.txt, .vtt) e Screenshots (.png, .jpg)</small>
+                        </div>
+                    </div>
+
+                    <!-- File List -->
+                    <div id="fileList" class="mb-3" style="display: none;">
+                        <h6 class="fw-bold">Arquivos Selecionados:</h6>
+                        <div id="fileListContent"></div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="uploadBtn">
+                            <i class="fas fa-rocket me-2"></i>
+                            Processar Arquivos
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Progress Section (Hidden initially) -->
+        <div class="card shadow-sm mt-4" id="progressSection" style="display: none;">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cogs me-2"></i>
+                    Status do Processamento
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Progress Bar -->
+                <div class="progress mb-3" style="height: 25px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         id="progressBar"
+                         style="width: 0%">
+                        0%
+                    </div>
+                </div>
+
+                <!-- Status Text -->
+                <div class="text-center mb-3">
+                    <h6 id="statusText">Preparando upload...</h6>
+                </div>
+
+                <!-- Step Details -->
+                <div class="step-details">
+                    <div class="step" id="step-upload">
+                        <i class="fas fa-circle-notch fa-spin me-2 text-primary"></i>
+                        <span>Upload de arquivos</span>
+                    </div>
+                    <div class="step" id="step-transcription">
+                        <i class="fas fa-circle me-2 text-muted"></i>
+                        <span>Processamento de transcrição</span>
+                    </div>
+                    <div class="step" id="step-ocr">
+                        <i class="fas fa-circle me-2 text-muted"></i>
+                        <span>Análise de screenshots (OCR)</span>
+                    </div>
+                    <div class="step" id="step-correlation">
+                        <i class="fas fa-circle me-2 text-muted"></i>
+                        <span>Correlação áudio-visual</span>
+                    </div>
+                    <div class="step" id="step-ai">
+                        <i class="fas fa-circle me-2 text-muted"></i>
+                        <span>Geração de documentação (IA)</span>
+                    </div>
+                    <div class="step" id="step-complete">
+                        <i class="fas fa-circle me-2 text-muted"></i>
+                        <span>Finalização</span>
+                    </div>
+                </div>
+
+                <!-- Cancel Button -->
+                <div class="text-center mt-3">
+                    <button class="btn btn-outline-secondary" id="cancelBtn" style="display: none;">
+                        Cancelar Processamento
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Section (Hidden initially) -->
+        <div class="card shadow-sm mt-4" id="resultSection" style="display: none;">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Processamento Concluído
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
+                    <h5>Documentação gerada com sucesso!</h5>
+                    <p class="text-muted">Clique no botão abaixo para revisar a documentação</p>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success btn-lg" id="reviewBtn">
+                        <i class="fas fa-eye me-2"></i>
+                        Revisar Documentação
+                    </button>
+                    <button class="btn btn-outline-primary" id="downloadBtn">
+                        <i class="fas fa-download me-2"></i>
+                        Download Word (.docx)
+                    </button>
+                </div>
+
+                <!-- Session Info -->
+                <hr>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <small class="text-muted">Sessão ID:</small><br>
+                        <code id="sessionId">-</code>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Processado em:</small><br>
+                        <span id="processingTime">-</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Status:</small><br>
+                        <span class="badge bg-success" id="finalStatus">Concluído</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Como Usar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-file-text me-2 text-primary"></i>Transcrição</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle me-2 text-success"></i>Arquivo de texto (.txt) ou VTT (.vtt)</li>
+                            <li><i class="fas fa-check-circle me-2 text-success"></i>Transcrição do Microsoft Teams</li>
+                            <li><i class="fas fa-check-circle me-2 text-success"></i>Máximo 10MB</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-images me-2 text-primary"></i>Screenshots</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle me-2 text-success"></i>Imagens PNG, JPG, ou GIF</li>
+                            <li><i class="fas fa-check-circle me-2 text-success"></i>Múltiplos arquivos aceitos</li>
+                            <li><i class="fas fa-check-circle me-2 text-success"></i>Máximo 40MB total</li>
+                            <li><i class="fas fa-info-circle me-2 text-warning"></i><strong>Opcional:</strong> Use checkbox se não tiver screenshots</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="alert alert-info mb-0">
+                    <h6><i class="fas fa-lightbulb me-2"></i>Dicas para Melhores Resultados:</h6>
+                    <ul class="mb-0">
+                        <li>Use transcrições com ações claras ("clico em", "digito", "seleciono")</li>
+                        <li>Screenshots com boa qualidade e elementos visíveis</li>
+                        <li>Ordene os screenshots cronologicamente</li>
+                        <li>Inclua screenshots das telas principais do processo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+<script src="{{ url_for('static', filename='js/processing.js') }}"></script>
+{% endblock %}

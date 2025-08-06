@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}Revisão - {{ session.id[:8] }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Session Info Header -->
+    <div class="col-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i>
+                        Revisão da Documentação
+                    </h5>
+                    <div>
+                        <span class="badge bg-light text-dark">ID: {{ session.id[:8] }}</span>
+                        <span class="badge bg-{% if session.status == 'completed' %}success{% else %}warning{% endif %}">
+                            {{ session.status.title() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <small class="text-muted">Criado em:</small><br>
+                        <strong>{{ session.created_at.strftime('%d/%m/%Y %H:%M') }}</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">Atualizado em:</small><br>
+                        <strong>{{ session.updated_at.strftime('%d/%m/%Y %H:%M') }}</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">Transcrição:</small><br>
+                        <strong>{% if session.transcription_file %}✓ Enviada{% else %}✗ Não enviada{% endif %}</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">Screenshots:</small><br>
+                        <strong id="screenshotCount">Carregando...</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left Column: Original Files -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-folder-open me-2"></i>
+                    Arquivos Originais
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Transcription Preview -->
+                <div class="mb-4" id="transcriptionSection">
+                    <h6 class="fw-bold">
+                        <i class="fas fa-file-text me-2 text-primary"></i>
+                        Transcrição
+                    </h6>
+                    <div class="border rounded p-3 bg-light">
+                        <div id="transcriptionPreview" class="text-muted">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando transcrição...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screenshots Preview -->
+                <div id="screenshotsSection">
+                    <h6 class="fw-bold">
+                        <i class="fas fa-images me-2 text-primary"></i>
+                        Screenshots
+                    </h6>
+                    <div id="screenshotsPreview" class="text-muted">
+                        <i class="fas fa-spinner fa-spin"></i> Carregando screenshots...
+                    </div>
+                </div>
+
+                <!-- Processing Stats -->
+                <div class="mt-4" id="processingStats" style="display: none;">
+                    <h6 class="fw-bold">
+                        <i class="fas fa-chart-bar me-2 text-primary"></i>
+                        Estatísticas do Processamento
+                    </h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="card bg-light">
+                                <div class="card-body p-2 text-center">
+                                    <h6 class="card-title mb-1" id="actionsCount">-</h6>
+                                    <small class="text-muted">Ações Identificadas</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card bg-light">
+                                <div class="card-body p-2 text-center">
+                                    <h6 class="card-title mb-1" id="correlationQuality">-</h6>
+                                    <small class="text-muted">Qualidade</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Generated Documentation -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-code me-2"></i>
+                        Documentação Gerada
+                    </h5>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-light" id="editBtn" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-light" id="previewBtn" title="Visualizar" style="display: none;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Documentation Content -->
+                <div id="documentationView">
+                    <div id="documentationContent" class="documentation-content">
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                            <p>Carregando documentação...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Mode (Hidden initially) -->
+                <div id="documentationEdit" style="display: none;">
+                    <textarea id="documentationEditor" 
+                              class="form-control"
+                              rows="20"
+                              placeholder="Documentação será carregada aqui..."></textarea>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i>
+                            Você pode editar a documentação diretamente. Mudanças são salvas automaticamente.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button class="btn btn-outline-secondary" id="saveBtn" style="display: none;">
+                        <i class="fas fa-save me-2"></i>
+                        Salvar Alterações
+                    </button>
+                    <button class="btn btn-outline-danger" id="rejectBtn">
+                        <i class="fas fa-times me-2"></i>
+                        Rejeitar
+                    </button>
+                    <button class="btn btn-success" id="approveBtn">
+                        <i class="fas fa-check me-2"></i>
+                        Aprovar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Section -->
+    <div class="col-12 mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-download me-2"></i>
+                    Downloads Disponíveis
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button class="btn btn-primary" id="downloadWordBtn">
+                                <i class="fas fa-file-word me-2"></i>
+                                Download Word (.docx)
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button class="btn btn-outline-primary" id="downloadMarkdownBtn">
+                                <i class="fas fa-file-code me-2"></i>
+                                Download Markdown
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button class="btn btn-outline-primary" id="newProcessBtn">
+                                <i class="fas fa-plus me-2"></i>
+                                Novo Processo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Aprovar Documentação
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Confirma que a documentação está correta e pode ser utilizada para desenvolvimento do RPA?</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Após aprovada, a documentação será marcada como final e estará disponível para download.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="confirmApproveBtn">
+                    <i class="fas fa-check me-2"></i>
+                    Confirmar Aprovação
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-times-circle me-2"></i>
+                    Rejeitar Documentação
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Por que você está rejeitando esta documentação?</p>
+                <textarea class="form-control" id="rejectionReason" rows="3" 
+                          placeholder="Descreva os problemas encontrados (opcional)..."></textarea>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    A documentação será marcada como rejeitada e o processo precisará ser refeito.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmRejectBtn">
+                    <i class="fas fa-times me-2"></i>
+                    Confirmar Rejeição
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Screenshot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" class="img-fluid" src="" alt="Screenshot">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/review.js') }}"></script>
+<script>
+    // Pass session data to JavaScript
+    window.sessionData = {
+        id: '{{ session.id }}',
+        status: '{{ session.status }}',
+        transcription_file: {% if session.transcription_file %}'{{ session.transcription_file }}'{% else %}null{% endif %},
+        screenshot_files: {{ session.screenshot_files | safe if session.screenshot_files else '[]' }}
+    };
+</script>
+{% endblock %}

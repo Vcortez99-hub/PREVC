@@ -1,0 +1,96 @@
+{
+  "agents": {
+    "rpa_general": {
+      "name": "RPA Geral",
+      "description": "Documentação geral para processos RPA com foco na clareza e completude",
+      "focus": "Documentação técnica balanceada",
+      "audience": "Desenvolvedores e analistas RPA",
+      "template_file": "rpa_general.txt",
+      "enabled": true
+    },
+    "rpa_technical": {
+      "name": "RPA Técnico",
+      "description": "Documentação técnica detalhada para implementação avançada",
+      "focus": "Especificações técnicas e código",
+      "audience": "Desenvolvedores e arquitetos RPA",
+      "template_file": "rpa_technical.txt",
+      "enabled": true
+    },
+    "rpa_business": {
+      "name": "RPA Business",
+      "description": "Documentação focada no valor de negócio e ROI",
+      "focus": "Benefícios de negócio e análise financeira",
+      "audience": "Executivos e stakeholders de negócio",
+      "template_file": "rpa_business.txt",
+      "enabled": true
+    },
+    "process_analyst": {
+      "name": "Analista de Processos",
+      "description": "Análise detalhada de processos e mapeamento de fluxos",
+      "focus": "Mapeamento e otimização de processos",
+      "audience": "Analistas de processo e consultores",
+      "template_file": "process_analyst.txt",
+      "enabled": true
+    },
+    "custom": {
+      "name": "Personalizado",
+      "description": "Prompt customizável para casos específicos",
+      "focus": "Flexível e personalizável",
+      "audience": "Configurável conforme necessidade",
+      "template_file": "custom.txt",
+      "enabled": true
+    }
+  },
+  "providers": {
+    "openai": {
+      "name": "OpenAI",
+      "models": [
+        {"id": "gpt-4", "name": "GPT-4", "description": "Modelo mais avançado da OpenAI"},
+        {"id": "gpt-4-turbo", "name": "GPT-4 Turbo", "description": "GPT-4 otimizado para velocidade"},
+        {"id": "gpt-3.5-turbo", "name": "GPT-3.5 Turbo", "description": "Modelo rápido e eficiente"}
+      ],
+      "enabled": true,
+      "requires_setup": false
+    },
+    "azure": {
+      "name": "Azure OpenAI",
+      "models": [
+        {"id": "gpt-4", "name": "Azure GPT-4", "description": "GPT-4 via Azure OpenAI"},
+        {"id": "gpt-35-turbo", "name": "Azure GPT-3.5 Turbo", "description": "GPT-3.5 via Azure"}
+      ],
+      "enabled": false,
+      "requires_setup": true,
+      "setup_note": "Requer configuração de endpoint e versão da API"
+    },
+    "anthropic": {
+      "name": "Anthropic (Claude)",
+      "models": [
+        {"id": "claude-3-opus", "name": "Claude 3 Opus", "description": "Modelo mais avançado da Anthropic"},
+        {"id": "claude-3-sonnet", "name": "Claude 3 Sonnet", "description": "Modelo balanceado"},
+        {"id": "claude-3-haiku", "name": "Claude 3 Haiku", "description": "Modelo rápido e eficiente"}
+      ],
+      "enabled": false,
+      "requires_setup": true,
+      "setup_note": "Requer instalação da biblioteca anthropic"
+    },
+    "google": {
+      "name": "Google (Gemini)",
+      "models": [
+        {"id": "gemini-pro", "name": "Gemini Pro", "description": "Modelo principal do Google"},
+        {"id": "gemini-pro-vision", "name": "Gemini Pro Vision", "description": "Com capacidades de visão"}
+      ],
+      "enabled": false,
+      "requires_setup": true,
+      "setup_note": "Requer configuração da biblioteca google-generativeai"
+    }
+  },
+  "settings": {
+    "default_provider": "openai",
+    "default_model": "gpt-4",
+    "default_agent": "rpa_general",
+    "max_tokens": 2000,
+    "temperature": 0.3,
+    "enable_prompt_caching": true,
+    "prompt_validation": true
+  }
+}

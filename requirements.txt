@@ -1,0 +1,13 @@
+Flask
+Flask-SQLAlchemy
+python-docx
+pytesseract
+Pillow
+openai
+python-dotenv
+markdown
+reportlab
+requests
+webvtt-py
+google-cloud-vision
+numpy
