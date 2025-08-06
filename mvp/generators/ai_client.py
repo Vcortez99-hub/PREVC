@@ -137,7 +137,7 @@ Sua tarefa é gerar uma documentação técnica estruturada e clara baseada nas 
         
         try:
             # Usar prompt customizado se fornecido, senão usar o padrão
-            system_prompt = custom_prompt if custom_prompt else self.base_template
+            system_prompt = custom_prompt if custom_prompt else self.base_prompt
             
             # Construir prompt contextualizado
             user_prompt = self._build_contextualized_prompt(correlated_data, template_base)
