@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Upload de Arquivos - RPA Doc{% endblock %}
+{% block title %}Upload de Arquivos - Gerador Especificação Funcional{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -9,10 +9,10 @@
         <div class="text-center mb-5">
             <h1 class="display-5 fw-bold text-primary">
                 <i class="fas fa-upload me-3"></i>
-                Documentação RPA Automática
+                Gerador de Especificação Funcional
             </h1>
             <p class="lead text-muted">
-                Envie suas transcrições e screenshots para gerar documentação RPA automaticamente
+                Envie suas transcrições e capturas de tela para gerar especificações funcionais automaticamente
             </p>
         </div>
 
@@ -47,7 +47,7 @@
                     <div class="mb-4" id="screenshotsSection">
                         <label for="screenshots" class="form-label fw-bold">
                             <i class="fas fa-images me-2 text-primary"></i>
-                            Screenshots do Processo
+                            Capturas de Tela do Processo
                         </label>
                         <input type="file" 
                                class="form-control" 
@@ -149,14 +149,14 @@
                                    name="transcriptionOnlyMode">
                             <label class="form-check-label fw-bold" for="transcriptionOnlyMode">
                                 <i class="fas fa-file-text me-2 text-warning"></i>
-                                Processar apenas com transcrição (sem screenshots)
+                                Processar apenas com transcrição (sem capturas de tela)
                             </label>
                         </div>
                         <div class="form-text">
                             <small class="text-muted">
                                 <i class="fas fa-info-circle me-1"></i>
-                                Marque esta opção se você não possui screenshots do processo. 
-                                A documentação será gerada baseada apenas na transcrição fornecida.
+                                Marque esta opção se você não possui capturas de tela do processo. 
+                                A especificação será gerada baseada apenas na transcrição fornecida.
                             </small>
                         </div>
                     </div>
@@ -169,7 +169,7 @@
                             <p class="mb-0">
                                 <strong>Arraste arquivos aqui</strong> ou use os campos acima
                             </p>
-                            <small class="text-muted">Transcrições (.txt, .vtt) e Screenshots (.png, .jpg)</small>
+                            <small class="text-muted">Transcrições (.txt, .vtt) e Capturas de Tela (.png, .jpg)</small>
                         </div>
                     </div>
 
@@ -226,7 +226,7 @@
                     </div>
                     <div class="step" id="step-ocr">
                         <i class="fas fa-circle me-2 text-muted"></i>
-                        <span>Análise de screenshots (OCR)</span>
+                        <span>Análise de capturas de tela (OCR)</span>
                     </div>
                     <div class="step" id="step-correlation">
                         <i class="fas fa-circle me-2 text-muted"></i>
@@ -234,7 +234,7 @@
                     </div>
                     <div class="step" id="step-ai">
                         <i class="fas fa-circle me-2 text-muted"></i>
-                        <span>Geração de documentação (IA)</span>
+                        <span>Geração de especificação (IA)</span>
                     </div>
                     <div class="step" id="step-complete">
                         <i class="fas fa-circle me-2 text-muted"></i>
@@ -262,14 +262,14 @@
             <div class="card-body">
                 <div class="text-center mb-3">
                     <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
-                    <h5>Documentação gerada com sucesso!</h5>
-                    <p class="text-muted">Clique no botão abaixo para revisar a documentação</p>
+                    <h5>Especificação funcional gerada com sucesso!</h5>
+                    <p class="text-muted">Clique no botão abaixo para revisar a especificação</p>
                 </div>
 
                 <div class="d-grid gap-2">
                     <button class="btn btn-success btn-lg" id="reviewBtn">
                         <i class="fas fa-eye me-2"></i>
-                        Revisar Documentação
+                        Revisar Especificação
                     </button>
                     <button class="btn btn-outline-primary" id="downloadBtn">
                         <i class="fas fa-download me-2"></i>
@@ -315,12 +315,12 @@
                         </ul>
                     </div>
                     <div class="col-md-6">
-                        <h6><i class="fas fa-images me-2 text-primary"></i>Screenshots</h6>
+                        <h6><i class="fas fa-images me-2 text-primary"></i>Capturas de Tela</h6>
                         <ul class="list-unstyled">
-                            <li><i class="fas fa-check-circle me-2 text-success"></i>Imagens PNG, JPG, ou GIF</li>
+                            <li><i class="fas fa-check-circle me-2 text-success"></i>Imagens PNG, JPG ou GIF</li>
                             <li><i class="fas fa-check-circle me-2 text-success"></i>Múltiplos arquivos aceitos</li>
                             <li><i class="fas fa-check-circle me-2 text-success"></i>Máximo 40MB total</li>
-                            <li><i class="fas fa-info-circle me-2 text-warning"></i><strong>Opcional:</strong> Use checkbox se não tiver screenshots</li>
+                            <li><i class="fas fa-info-circle me-2 text-warning"></i><strong>Opcional:</strong> Use checkbox se não tiver capturas de tela</li>
                         </ul>
                     </div>
                 </div>
@@ -331,9 +331,9 @@
                     <h6><i class="fas fa-lightbulb me-2"></i>Dicas para Melhores Resultados:</h6>
                     <ul class="mb-0">
                         <li>Use transcrições com ações claras ("clico em", "digito", "seleciono")</li>
-                        <li>Screenshots com boa qualidade e elementos visíveis</li>
-                        <li>Ordene os screenshots cronologicamente</li>
-                        <li>Inclua screenshots das telas principais do processo</li>
+                        <li>Capturas de tela com boa qualidade e elementos visíveis</li>
+                        <li>Ordene as capturas de tela cronologicamente</li>
+                        <li>Inclua capturas das telas principais do processo</li>
                     </ul>
                 </div>
             </div>

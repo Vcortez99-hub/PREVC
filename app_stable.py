@@ -119,15 +119,6 @@ def index():
         logging.error(f"Erro na página inicial: {e}")
         return "Erro interno", 500
 
-@app.route('/history-page')
-def history_page():
-    """Página do histórico"""
-    try:
-        return render_template('history.html')
-    except Exception as e:
-        logging.error(f"Erro na página de histórico: {e}")
-        return "Erro interno", 500
-
 @app.route('/upload', methods=['POST'])
 def upload_files():
     """Upload com validação robusta"""
@@ -527,8 +518,7 @@ def health_check():
     """Health check"""
     try:
         # Teste básico do database
-        from sqlalchemy import text
-        db.session.execute(text('SELECT 1'))
+        db.session.execute('SELECT 1')
         
         return jsonify({
             'status': 'healthy',
